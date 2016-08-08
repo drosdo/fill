@@ -5,8 +5,17 @@
   width: 800px;
   height: 600px;
   background: lightgrey;
+  position: relative;
 }
 .fill__block {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  /*
+  transition : transform 1s, width 1s;
+  */
+
 
 }
 .fill__block._size1 {
@@ -25,7 +34,7 @@
   height: 70px;
 }
 .fill__block._size4 {
-  background: yellow;
+  background: blue;
   width: 300px;
   height: 400px;
 }
