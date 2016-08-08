@@ -1,0 +1,46 @@
+
+.fill {}
+
+.fill__wrap {
+  width: 800px;
+  height: 600px;
+  background: lightgrey;
+}
+.fill__block {
+
+}
+.fill__block._size1 {
+  background: red;
+  width: 100px;
+  height: 100px;
+}
+.fill__block._size2 {
+  background: yellow;
+  width: 70px;
+  height: 70px;
+}
+.fill__block._size3 {
+  background: green;
+  width: 150px;
+  height: 70px;
+}
+.fill__block._size4 {
+  background: yellow;
+  width: 300px;
+  height: 400px;
+}
+.fill__block._size5 {
+  background: pink;
+  width: 50px;
+  height: 100px;
+}
+.fill__block._size5 {
+  background: pink;
+  width: 200px;
+  height: 250px;
+}
+.fill__block._size6 {
+  background: black;
+  width: 66px;
+  height: 66px;
+}
