@@ -11,8 +11,9 @@ Fill.prototype = {
     this.getWrapSize();
     this.getBlockSizes();
     this.startState();
+    this.dontPlace = false;
     setTimeout(function() {
-      that.placeBlocks();
+      that.fillRow();
 
     }, 10)
   },
@@ -39,6 +40,8 @@ Fill.prototype = {
   startState: function() {
      this.centerBlocks();
   },
+
+
   centerBlocks: function() {
     var i;
     var el;
@@ -64,7 +67,46 @@ Fill.prototype = {
     },10)
 
   },
-  placeBlocks: function () {
+
+  fillRow: function() {
+    var i;
+    var width = 0;
+    var ids = [];
+
+    for (i = 0; i < this.$blocks.length; i++) {
+      if (width >= this.wrapSize.width) {
+        this.fixBlocks(ids, width);
+        this.placeBlocks(ids);
+        break;
+      } else {
+        ids.push(i);
+        width += this.blockSizes[i].width;
+      }
+
+    }
+  },
+  getRatio: function (width) {
+    return this.wrapSize.width / width;
+  },
+  fixBlocks: function(ids, width) {
+    var k = this.getRatio(width);
+    for (var i = 0; i < ids.length; i++) {
+      this.blockSizes[i].width *= k;
+      this.blockSizes[i].height *= k;
+      this.$blocks[i].style.width = this.blockSizes[i].width + 'px';
+      this.$blocks[i].style.height = this.blockSizes[i].height + 'px';
+    }
+
+  },
+  placeBlocks: function(ids) {
+    var width = 0;
+    for (var i = 0; i < ids.length; i++) {
+      var j = ids[i];
+      this.setBlockCss(this.$blocks[j], width, 0);
+      width += this.blockSizes[j].width;
+    }
+  },
+  /*placeBlocks: function () {
     var i;
     this.filledMap = [];
     for (i = 0; i < this.$blocks.length; i++) {
@@ -85,44 +127,46 @@ Fill.prototype = {
         'y2': this.blockSizes[i].height
       };
     } else {
-      console.log(i - 1)
-      x1 = this.filledMap[i - 1].x2;
-      y1 = 0;
-      x2 = x1 + this.blockSizes[i].width;
-      console.log(x2)
-      y2 = y1 + this.blockSizes[i].height;
+      if(!this.dontPlace) {
 
-      this.filledMap[i] = {
-        'x1': x1,
-        'y1': y1,
-        'x2': x2,
-        'y2': y2
-      };
-      if ((x1 + this.blockSizes[i].width) < this.wrapSize.width) {
-        this.setBlockCss(this.$blocks[i], x1, y1);
-      } else {
-        //если не влезает - ищу у след размеры ближайшие, чуть большие и уменьшаю
-        var delta = this.filledMap[i - 1].x2 - this.wrapSize.width;
-        var deltas = [];
-        var nextBlocks = [];
-        var min;
-        for (var k = i; k < this.blockSizes.length; k++) {
-          if ((this.blockSizes[k].width - delta) > 0) {
-            nextBlocks[this.blockSizes[k].width] = k;
-            deltas.push(this.blockSizes[k].width);
+
+        x1 = this.filledMap[i - 1].x2;
+        y1 = 0;
+        x2 = x1 + this.blockSizes[i].width;
+        y2 = y1 + this.blockSizes[i].height;
+
+        this.filledMap[i] = {
+          'x1': x1,
+          'y1': y1,
+          'x2': x2,
+          'y2': y2
+        };
+        if ((x1 + this.blockSizes[i].width) < this.wrapSize.width) {
+          this.setBlockCss(this.$blocks[i], x1, y1);
+        } else {
+          //если не влезает - смотрю след
+          this.dontPlace = true;
+          var delta = this.wrapSize.width - this.filledMap[i].x1;
+          var deltas = [];
+          var nextBlockId = [];
+          var min;
+          console.log(this.blockSizes)
+          for (var k = i-1; k < this.blockSizes.length; k++) {
+            if ((this.blockSizes[k].width - delta) > 0) {
+              // ищу минимально влезающий
+              nextBlockId[this.blockSizes[k].width - delta] = k;
+              deltas.push(this.blockSizes[k].width - delta);
+            }
           }
+          min = Math.min.apply(null, deltas);
+          this.fixSizes(min);
         }
-        min = Math.min.apply(null, deltas),
-        console.log(min)
-        console.log(delta) //  - не то. смотрю ширину у след а не у всех
       }
-
-
     }
+  },*/
+  fixSizes: function(delta) {
 
-    console.log(this.$blocks[i])
   },
-
   findPlace: function(i) {
     this.getEmptySpace(i);
   },
@@ -130,6 +174,7 @@ Fill.prototype = {
 
   },
   setBlockCss: function(block, x, y) {
+    console.log(x)
     block.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
   }
 

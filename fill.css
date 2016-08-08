@@ -44,7 +44,7 @@
   height: 100px;
 }
 .fill__block._size5 {
-  background: pink;
+  background: tomato;
   width: 200px;
   height: 250px;
 }
@@ -52,4 +52,19 @@
   background: black;
   width: 66px;
   height: 66px;
+}
+.fill__block._size7 {
+  background: turquoise;
+  width: 190px;
+  height: 130px;
+}
+.fill__block._size8 {
+  background: wheat;
+  width: 230px;
+  height: 200px;
+}
+.fill__block._size9 {
+  background: yellowgreen;
+  width: 70px;
+  height: 336px;
 }
