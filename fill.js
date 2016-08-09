@@ -12,6 +12,9 @@ Fill.prototype = {
     this.getBlockSizes();
     this.startState();
     this.dontPlace = false;
+    this.rows = [];
+    this.currentRow = 0;
+
     setTimeout(function() {
       that.fillRow();
 
@@ -77,12 +80,12 @@ Fill.prototype = {
       if (width >= this.wrapSize.width) {
         this.fixBlocks(ids, width);
         this.placeBlocks(ids);
+        this.fillNextRow(i);
         break;
       } else {
         ids.push(i);
         width += this.blockSizes[i].width;
       }
-
     }
   },
   getRatio: function (width) {
@@ -96,7 +99,6 @@ Fill.prototype = {
       this.$blocks[i].style.width = this.blockSizes[i].width + 'px';
       this.$blocks[i].style.height = this.blockSizes[i].height + 'px';
     }
-
   },
   placeBlocks: function(ids) {
     var width = 0;
@@ -105,77 +107,36 @@ Fill.prototype = {
       this.setBlockCss(this.$blocks[j], width, 0);
       width += this.blockSizes[j].width;
     }
+    this.currentRow = 0;
+    this.rows.push(this.blockSizes.slice(0, ids.length));
+    console.log(this.rows)
+
   },
-  /*placeBlocks: function () {
-    var i;
-    this.filledMap = [];
-    for (i = 0; i < this.$blocks.length; i++) {
-      this.placeBLock(i);
+  fillNextRow: function (startFrom) {
+    console.log(this.rows)
+    for (var i = startFrom; i < this.$blocks.length; i++) {
+       this.findPlaceFor(i)
+      
     }
   },
-  placeBLock: function (i) {
-    var j;
-    var x2;
-    var y2;
+  findPlaceFor: function (i) {
+    // ищу по вертикали от меньшей высоты пред строки
+    var blocksSizesByHeight = [];
+    var minYId = 0;
+    var minY = 0;
 
-    if (i === 0){
-      this.setBlockCss(this.$blocks[i], 0, 0);
-      this.filledMap[i] = {
-        'x1' : 0,
-        'y1': 0,
-        'x2': this.blockSizes[i].width,
-        'y2': this.blockSizes[i].height
-      };
-    } else {
-      if(!this.dontPlace) {
+    blocksSizesByHeight = this.rows[0].sort(this.compareHeights);
 
+    console.log(blocksSizesByHeight)
 
-        x1 = this.filledMap[i - 1].x2;
-        y1 = 0;
-        x2 = x1 + this.blockSizes[i].width;
-        y2 = y1 + this.blockSizes[i].height;
-
-        this.filledMap[i] = {
-          'x1': x1,
-          'y1': y1,
-          'x2': x2,
-          'y2': y2
-        };
-        if ((x1 + this.blockSizes[i].width) < this.wrapSize.width) {
-          this.setBlockCss(this.$blocks[i], x1, y1);
-        } else {
-          //если не влезает - смотрю след
-          this.dontPlace = true;
-          var delta = this.wrapSize.width - this.filledMap[i].x1;
-          var deltas = [];
-          var nextBlockId = [];
-          var min;
-          console.log(this.blockSizes)
-          for (var k = i-1; k < this.blockSizes.length; k++) {
-            if ((this.blockSizes[k].width - delta) > 0) {
-              // ищу минимально влезающий
-              nextBlockId[this.blockSizes[k].width - delta] = k;
-              deltas.push(this.blockSizes[k].width - delta);
-            }
-          }
-          min = Math.min.apply(null, deltas);
-          this.fixSizes(min);
-        }
-      }
-    }
-  },*/
-  fixSizes: function(delta) {
-
-  },
-  findPlace: function(i) {
-    this.getEmptySpace(i);
-  },
-  getEmptySpace: function(i) {
 
   },
   setBlockCss: function(block, x, y) {
     console.log(x)
     block.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+  },
+  compareHeights: function(a, b) {
+    return a.height - b.height;
   }
 
 
