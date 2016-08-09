@@ -68,3 +68,8 @@
   width: 70px;
   height: 336px;
 }
+.fill__block._size10 {
+  background: violet;
+  width: 210px;
+  height: 16px;
+}

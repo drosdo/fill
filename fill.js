@@ -100,6 +100,15 @@ Fill.prototype = {
       this.$blocks[i].style.height = this.blockSizes[i].height + 'px';
     }
   },
+  fixBlockTo: function(id, width) {
+    console.log(id, width);
+    this.blockSizes[id].height *= (this.blockSizes[id].width / width);
+    this.blockSizes[id].width = width;
+    this.$blocks[id].style.width = this.blockSizes[id].width + 'px';
+    this.$blocks[id].style.height = this.blockSizes[id].height + 'px';
+    console.log(this.blockSizes[id]);
+
+  },
   placeBlocks: function(ids) {
     var width = 0;
     for (var i = 0; i < ids.length; i++) {
@@ -113,26 +122,44 @@ Fill.prototype = {
 
   },
   fillNextRow: function (startFrom) {
-    console.log(this.rows)
-    for (var i = startFrom; i < this.$blocks.length; i++) {
-       this.findPlaceFor(i)
-      
-    }
-  },
-  findPlaceFor: function (i) {
-    // ищу по вертикали от меньшей высоты пред строки
     var blocksSizesByHeight = [];
-    var minYId = 0;
-    var minY = 0;
-
+    var takenBlocks = [];
+    var closestId;
+    var width = 0;
+    var transformx;
+    var currentBlock;
+    var currentBlockSize;
     blocksSizesByHeight = this.rows[0].sort(this.compareHeights);
 
-    console.log(blocksSizesByHeight)
 
+    for (var j = 0; j < blocksSizesByHeight.length; j++) {
 
+      closestId = this.getClosestBlock(startFrom, blocksSizesByHeight[j].width, takenBlocks);
+      takenBlocks.push(closestId);
+      currentBlock = this.$blocks[ this.blockSizes.indexOf( blocksSizesByHeight[j] ) ];
+      currentBlockSize = this.blockSizes[ this.blockSizes.indexOf( blocksSizesByHeight[j] ) ];
+      transformx = currentBlock.dataset.transformx;
+      this.fixBlockTo(closestId, currentBlockSize.width);
+      this.setBlockCss(this.$blocks[closestId], transformx, blocksSizesByHeight[j].height )
+    }
+  },
+  getClosestBlock: function (startFrom, prevWidth, takenBlocks) {
+    var delta = 0;
+    var minDelta = 100000;
+    var minId = 0;
+    for (var i = startFrom; i < this.$blocks.length; i++) {
+      delta = Math.abs(prevWidth - this.blockSizes[i].width);
+      if (delta < minDelta && takenBlocks.indexOf(i) < 0) {
+        minDelta = delta;
+        minId = i;
+      }
+    }
+    return minId;
   },
   setBlockCss: function(block, x, y) {
     console.log(x)
+    block.dataset.transformx = x;
+    block.dataset.transformy = y;
     block.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
   },
   compareHeights: function(a, b) {
